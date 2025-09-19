@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" monitorInterval="30">
+
+    <!-- Properties for reusability -->
+    <Properties>
+        <Property name="LOG_PATTERN">%d{yyyy-MM-dd HH:mm:ss} [%t] %-5level %c{1} - %msg%n</Property>
+        <Property name="LOG_DIR">logs</Property>
+    </Properties>
+
+    <!-- Appenders (where logs will be written) -->
+    <Appenders>
+
+        <!-- Console output -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${LOG_PATTERN}" />
+        </Console>
+
+        <!-- Main log file -->
+        <File name="FileLogger" fileName="${LOG_DIR}/automation.log" append="true">
+            <PatternLayout pattern="${LOG_PATTERN}" />
+        </File>
+
+        <!-- Rolling file logs (separate daily files, compress old logs) -->
+        <RollingFile name="RollingFileLogger"
+                     fileName="${LOG_DIR}/framework.log"
+                     filePattern="${LOG_DIR}/archive/framework-%d{yyyy-MM-dd}-%i.log.gz">
+
+            <PatternLayout pattern="${LOG_PATTERN}" />
+
+            <Policies>
+                <!-- New log file every day -->
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <!-- Or if size exceeds 10MB -->
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+
+            <DefaultRolloverStrategy max="15"/> <!-- Keep last 15 logs -->
+        </RollingFile>
+
+    </Appenders>
+
+    <!-- Loggers -->
+    <Loggers>
+
+        <!-- Framework packages (change 'com.automation' to your base package) -->
+        <Logger name="com.automation" level="debug" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="FileLogger"/>
+            <AppenderRef ref="RollingFileLogger"/>
+        </Logger>
+
+        <!-- Selenium related logs (optional: suppress if noisy) -->
+        <Logger name="org.openqa.selenium" level="warn" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+
+        <!-- Root logger (for everything else) -->
+        <Root level="Off">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="FileLogger"/>
+        </Root>
+
+    </Loggers>
+
+</Configuration>

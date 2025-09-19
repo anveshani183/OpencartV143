@@ -1,0 +1,2 @@
+cd  C:\workspace\Eclipsejavaseleniumproject\OpencartV143
+ mvn test
